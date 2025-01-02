@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UJ Task Tracker</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>UJ Task Tracker</h1>
+            <p>Manage your tasks efficiently and stay productive!</p>
+
+            <!-- Task Tracker Features -->
+            <div class="input-group">
+                <label>What would you like to do?</label>
+                <select id="taskOptions">
+                    <option value="add">Add Task</option>
+                    <option value="view">View Tasks</option>
+                    <option value="edit">Edit Task</option>
+                    <option value="delete">Delete Task</option>
+                    <option value="markCompleted">Mark as Completed</option>
+                    <option value="viewHistory">View History</option>
+                    <option value="setAlarm">Set Alarm</option>
+                </select>
+            </div>
+
+            <!-- Theme Selection -->
+            <div class="input-group">
+                <label>Choose a Theme:</label>
+                <select id="themeOptions">
+                    <option value="light">Light Theme</option>
+                    <option value="dark">Dark Theme</option>
+                    <option value="colorful">Colorful Theme</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <button class="btn" id="startBtn">Start Tracking</button>
+
+            <!-- Footer Link -->
+            <div class="signup-link">
+                <p>New to Task Tracking? <a href="#">Learn More</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle theme selection
+        const themeOptions = document.getElementById('themeOptions');
+        const body = document.body;
+
+        themeOptions.addEventListener('change', () => {
+            const selectedTheme = themeOptions.value;
+
+            // Remove existing theme classes
+            body.classList.remove('light', 'dark', 'colorful');
+
+            // Add the selected theme class
+            body.classList.add(selectedTheme);
+        });
+
+        // Apply default theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultTheme = 'light'; // Set your default theme here
+            themeOptions.value = defaultTheme;
+            body.classList.add(defaultTheme);
+        });
+    </script>
+</body>
+</html>
+
