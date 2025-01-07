@@ -108,15 +108,21 @@
       // Clear any previously displayed completed tasks
       completedTasksList.innerHTML = '';
 
-      // Display all completed tasks
-      completedTasks.forEach(task => {
-        const li = document.createElement('li');
-        li.textContent = task;
-        completedTasksList.appendChild(li);
-      });
-      
-      // Toggle visibility of completed tasks section
-      completedTasksSection.style.display = completedTasksSection.style.display === 'none' ? 'block' : 'none';
+      // Check if there are any completed tasks
+      if (completedTasks.length > 0) {
+        // Display all completed tasks
+        completedTasks.forEach(task => {
+          const li = document.createElement('li');
+          li.textContent = task;
+          completedTasksList.appendChild(li);
+        });
+        
+        // Show completed tasks section
+        completedTasksSection.style.display = 'block';
+      } else {
+        // Hide completed tasks section if no tasks are completed
+        completedTasksSection.style.display = 'none';
+      }
     });
   </script>
 </body>
