@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Tracker Dashboard</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>UJ Task Tracker</title>
     <style>
         /* General Styles */
         * {
@@ -16,59 +15,69 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            background-color: #67acf5;
             min-height: 100vh;
-            background-color: #f4f4f4;
+            overflow: hidden;
         }
 
-        /* Sidebar Styles */
+        /* Sidebar */
         .sidebar {
             width: 220px;
             background-color: #2c3e50;
             color: white;
-            padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            height: 100vh;
+            padding: 20px;
+            justify-content: flex-start;
         }
 
         .sidebar h2 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .sidebar button {
-            margin: 10px 0;
+            margin: 5px 0;
             padding: 12px;
             background-color: #3498db;
             border: none;
             color: white;
-            cursor: pointer;
             font-size: 16px;
             border-radius: 4px;
-            transition: background-color 0.3s ease;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .sidebar button:hover {
             background-color: #2980b9;
         }
 
-        /* Main Content Styles */
+        .sidebar .logout {
+            margin-top: auto;
+        }
+
+        /* Main Content */
         .main-content {
             flex-grow: 1;
             padding: 30px;
+            overflow-y: auto;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
+        .main-content::-webkit-scrollbar {
+            width: 8px;
         }
 
-        /* Task Statistics Section */
+        .main-content::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 4px;
+        }
+
         .task-statistics {
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
+            margin-bottom: 20px;
             background-color: #fff;
             padding: 15px;
             border-radius: 8px;
@@ -80,7 +89,6 @@
         }
 
         .task-statistics div h4 {
-            color: #333;
             font-size: 18px;
         }
 
@@ -90,10 +98,9 @@
             color: #3498db;
         }
 
-        /* Task List */
         .task-list {
             margin-top: 20px;
-            list-style-type: none;
+            list-style: none;
             padding: 0;
         }
 
@@ -103,25 +110,87 @@
             margin: 10px 0;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-list .task-details {
+            flex-grow: 1;
+        }
+
+        .task-list .task-status {
+            display: flex;
+            align-items: center;
+        }
+
+        .task-list .task-status .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .task-list .status-dot.in-progress {
+            background-color: green;
+        }
+
+        .task-list .status-dot.completed {
+            background-color: grey;
+        }
+
+        .task-buttons button {
+            margin-left: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .task-buttons button.edit {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .task-buttons button.edit:hover {
+            background-color: #e67e22;
+        }
+
+        .task-buttons button.complete {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .task-buttons button.complete:hover {
+            background-color: #2ecc71;
+        }
+
+        .task-buttons button.delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .task-buttons button.delete:hover {
+            background-color: #c0392b;
         }
 
         .footer {
-            margin-top: 30px;
             text-align: center;
-            color: #555;
+            color: #fff;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        /* Task Status */
-        .completed {
-            text-decoration: line-through;
-            color: green;
+        .footer a {
+            color: #fff;
+            text-decoration: underline;
         }
 
-        .in-progress {
-            color: orange;
-        }
-
-        /* Modal Styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -138,7 +207,7 @@
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            width: 300px;
+            width: 400px;
         }
 
         .modal-content input, .modal-content textarea {
@@ -163,40 +232,21 @@
         .modal-content button:hover {
             background-color: #2980b9;
         }
-
-        /* Success Popup */
-        .success-popup {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #28a745;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-            font-size: 16px;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="sidebar">
         <h2>UJ Task Tracker</h2>
         <button id="addTaskBtn">Add Task</button>
-        <button id="editTaskBtn">Edit Task</button>
-        <button id="deleteTaskBtn">Delete Task</button>
+        <button id="activeTasksBtn">Active Tasks</button>
+        <button id="completedTasksBtn">Completed Tasks</button>
+        <button id="viewAllTasksBtn">View All Tasks</button>
         <button id="settingsBtn">Settings</button>
-        <button id="logoutBtn">Logout</button>
+        <button id="logoutBtn" class="logout">Logout</button>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <h1>Welcome to Your Task Tracker Dashboard!</h1>
-        <p>Manage and track your tasks efficiently.</p>
-
-        <!-- Task Statistics Section -->
         <div class="task-statistics">
             <div>
                 <h4>Total Tasks</h4>
@@ -211,209 +261,133 @@
                 <p id="completedTasks">0</p>
             </div>
         </div>
-
-        <!-- Footer Link -->
-        <div class="footer">
-            <p>Need help? <a href="#">Learn More</a></p>
-        </div>
+        <ul class="task-list" id="taskList"></ul>
     </div>
 
-    <!-- Modal for Adding Task -->
+    <div class="footer">
+        <p>Need help? <a href="#">Learn More</a></p>
+    </div>
+
     <div class="modal" id="taskModal">
         <div class="modal-content">
-            <h3>Add New Task</h3>
+            <h3>Add Task</h3>
             <input type="text" id="taskTitle" placeholder="Task Title" required>
             <textarea id="taskDescription" rows="4" placeholder="Task Description" required></textarea>
-            <input type="date" id="taskDueDate" required>
-            <input type="text" id="taskAssignee" placeholder="Assigned Person" required>
-            <button id="submitTaskBtn">Add Task</button>
+            <input type="datetime-local" id="taskDueDate" required>
+            <button id="saveTaskBtn">Add Task</button>
         </div>
     </div>
 
-    <!-- Success Popup -->
-    <div class="success-popup" id="successPopup">Task Added</div>
-
     <script>
-        // Task Array to store added tasks
         let tasks = [];
 
-        // Elements
         const addTaskBtn = document.getElementById('addTaskBtn');
         const taskModal = document.getElementById('taskModal');
-        const submitTaskBtn = document.getElementById('submitTaskBtn');
-        const taskTitle = document.getElementById('taskTitle');
-        const taskDescription = document.getElementById('taskDescription');
-        const taskDueDate = document.getElementById('taskDueDate');
-        const taskAssignee = document.getElementById('taskAssignee');
+        const saveTaskBtn = document.getElementById('saveTaskBtn');
+        const taskList = document.getElementById('taskList');
         const totalTasksElem = document.getElementById('totalTasks');
         const inProgressTasksElem = document.getElementById('inProgressTasks');
         const completedTasksElem = document.getElementById('completedTasks');
-        const successPopup = document.getElementById('successPopup');
-        const editTaskBtn = document.getElementById('editTaskBtn');
-        const deleteTaskBtn = document.getElementById('deleteTaskBtn');
-        
-        // Show Modal to Add Task
-        addTaskBtn.addEventListener('click', () => {
-            taskModal.style.display = 'flex';
-            submitTaskBtn.textContent = 'Add Task'; // Reset to Add Task button
-            submitTaskBtn.onclick = addTask; // Set to add task
-        });
 
-        // Close Modal when clicked outside
-        window.addEventListener('click', (event) => {
-            if (event.target === taskModal) {
-                taskModal.style.display = 'none';
-            }
-        });
-
-        // Add Task to Task List
-        function addTask() {
-            const title = taskTitle.value.trim();
-            const description = taskDescription.value.trim();
-            const dueDate = taskDueDate.value;
-            const assignee = taskAssignee.value.trim();
-
-            if (title && description && dueDate && assignee) {
-                const newTask = {
-                    title,
-                    description,
-                    dueDate,
-                    assignee,
-                    status: 'in-progress',
-                };
-
-                tasks.push(newTask);
-                taskModal.style.display = 'none';
-
-                // Show success popup
-                successPopup.style.display = 'block';
-
-                // Hide the success popup after 3 seconds
-                setTimeout(() => {
-                    successPopup.style.display = 'none';
-                }, 3000);
-
-                // Update Statistics
-                updateTaskStatistics();
-            } else {
-                alert('Please fill in all fields');
-            }
-        }
-
-        // Show Task List when Edit Task button is clicked
-        editTaskBtn.addEventListener('click', () => {
-            renderTaskList('edit');
-        });
-
-        // Show Task List when Delete Task button is clicked
-        deleteTaskBtn.addEventListener('click', () => {
-            renderTaskList('delete');
-        });
-
-        // Render Task List in the UI
-        function renderTaskList(action) {
-            const taskList = document.createElement('ul');
-            taskList.classList.add('task-list');
-            taskList.innerHTML = ''; // Clear previous list
-
-            tasks.forEach((task, index) => {
-                const taskItem = document.createElement('li');
-                taskItem.innerHTML = `
-                    <strong class="${task.status}">${task.title}</strong>
-                    <p>${task.description}</p>
-                    <p><em>Due Date: ${task.dueDate}</em></p>
-                    <p><strong>Assigned to:</strong> ${task.assignee}</p>
-                `;
-
-                if (action === 'edit') {
-                    taskItem.innerHTML += `<button class="editTaskDetailsBtn" data-index="${index}">Edit</button>
-                    <button class="completeTaskBtn" data-index="${index}">${task.status === 'completed' ? 'Undo' : 'Complete'}</button>`;
-                } else if (action === 'delete') {
-                    taskItem.innerHTML += `<button class="deleteTaskBtn" data-index="${index}">Delete</button>`;
-                }
-
-                taskList.appendChild(taskItem);
+        function renderTasks(filter = 'all') {
+            taskList.innerHTML = '';
+            const filteredTasks = tasks.filter(task => {
+                if (filter === 'all') return true;
+                if (filter === 'active') return task.status === 'in-progress';
+                if (filter === 'completed') return task.status === 'completed';
             });
 
-            document.querySelector('.main-content').appendChild(taskList);
+            filteredTasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="task-details">
+                        <strong>${task.title}</strong>
+                        <p>${task.description}</p>
+                        <p><em>Due: ${task.dueDate}</em></p>
+                    </div>
+                    <div class="task-status">
+                        <span class="status-dot ${task.status}"></span>
+                        <div class="task-buttons">
+                            <button class="edit" onclick="editTask(${index})">Edit</button>
+                            <button class="complete" onclick="toggleComplete(${index})">${task.status === 'completed' ? 'Undo' : 'Complete'}</button>
+                            <button class="delete" onclick="deleteTask(${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
 
-            // Attach event listeners for edit, complete, and delete buttons
-            if (action === 'edit') {
-                const editButtons = document.querySelectorAll('.editTaskDetailsBtn');
-                const completeButtons = document.querySelectorAll('.completeTaskBtn');
+            updateStatistics();
+        }
 
-                editButtons.forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const taskIndex = event.target.getAttribute('data-index');
-                        const task = tasks[taskIndex];
-                        editTask(taskIndex, task);
-                    });
-                });
+        function updateStatistics() {
+            const total = tasks.length;
+            const inProgress = tasks.filter(task => task.status === 'in-progress').length;
+            const completed = tasks.filter(task => task.status === 'completed').length;
 
-                completeButtons.forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const taskIndex = event.target.getAttribute('data-index');
-                        toggleComplete(taskIndex);
-                    });
-                });
-            } else if (action === 'delete') {
-                const deleteButtons = document.querySelectorAll('.deleteTaskBtn');
-                deleteButtons.forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const taskIndex = event.target.getAttribute('data-index');
-                        deleteTask(taskIndex);
-                    });
-                });
+            totalTasksElem.textContent = total;
+            inProgressTasksElem.textContent = inProgress;
+            completedTasksElem.textContent = completed;
+        }
+
+        function addTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const dueDate = document.getElementById('taskDueDate').value;
+
+            if (title && description && dueDate) {
+                tasks.push({ title, description, dueDate, status: 'in-progress' });
+                closeModal();
+                renderTasks();
             }
         }
 
-        // Edit Task Functionality
-        function editTask(taskIndex, task) {
-            taskTitle.value = task.title;
-            taskDescription.value = task.description;
-            taskDueDate.value = task.dueDate;
-            taskAssignee.value = task.assignee;
+        function editTask(index) {
+            const task = tasks[index];
+            document.getElementById('taskTitle').value = task.title;
+            document.getElementById('taskDescription').value = task.description;
+            document.getElementById('taskDueDate').value = task.dueDate;
+            taskModal.style.display = 'flex';
 
-            // Change button text and functionality for updating
-            submitTaskBtn.textContent = 'Update Task';
-            submitTaskBtn.onclick = function() {
-                tasks[taskIndex] = {
-                    title: taskTitle.value,
-                    description: taskDescription.value,
-                    dueDate: taskDueDate.value,
-                    assignee: taskAssignee.value,
-                    status: task.status,
-                };
-
-                // Reset form
-                taskModal.style.display = 'none';
-                submitTaskBtn.textContent = 'Add Task';
-                updateTaskStatistics();
-                renderTaskList('edit');
+            saveTaskBtn.onclick = () => {
+                task.title = document.getElementById('taskTitle').value;
+                task.description = document.getElementById('taskDescription').value;
+                task.dueDate = document.getElementById('taskDueDate').value;
+                closeModal();
+                renderTasks();
             };
         }
 
-        // Delete Task Functionality
-        function deleteTask(taskIndex) {
-            tasks.splice(taskIndex, 1);
-            updateTaskStatistics();
-            renderTaskList('delete');
-        }
-
-        // Toggle Task Completion
-        function toggleComplete(taskIndex) {
-            const task = tasks[taskIndex];
+        function toggleComplete(index) {
+            const task = tasks[index];
             task.status = task.status === 'completed' ? 'in-progress' : 'completed';
-            updateTaskStatistics();
-            renderTaskList('edit');
+            renderTasks();
         }
 
-        // Update Task Statistics
-        function updateTaskStatistics() {
-            totalTasksElem.textContent = tasks.length;
-            inProgressTasksElem.textContent = tasks.filter(task => task.status === 'in-progress').length;
-            completedTasksElem.textContent = tasks.filter(task => task.status === 'completed').length;
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
         }
+
+        function closeModal() {
+            taskModal.style.display = 'none';
+            saveTaskBtn.onclick = addTask;
+        }
+
+        addTaskBtn.onclick = () => {
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskDueDate').value = '';
+            taskModal.style.display = 'flex';
+        };
+
+        saveTaskBtn.onclick = addTask;
+
+        window.onclick = (event) => {
+            if (event.target === taskModal) closeModal();
+        };
+
+        renderTasks();
     </script>
 </body>
 </html>
